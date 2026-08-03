@@ -1,0 +1,178 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+\begin{document}
+
+\title{Performance Comparison of Repeated Dijkstra and Floyd-Warshall for All-Pairs Shortest Path Problem\\
+}
+
+\author{
+\IEEEauthorblockN{Zeyad Mohamed Samir}
+\IEEEauthorblockA{\textit{ID: 2023/02809} \\
+\textit{Department of Computer Science} \\
+\textit{Misr International University}\\
+Cairo, Egypt}
+\and
+\IEEEauthorblockN{Habiba Essam}
+\IEEEauthorblockA{\textit{ID: 2023/02717} \\
+\textit{Department of Computer Science} \\
+\textit{Misr International University}\\
+Cairo, Egypt}
+\and
+\IEEEauthorblockN{Myriam Hamam Ebrahim}
+\IEEEauthorblockA{\textit{ID: 2023/07863} \\
+\textit{Department of Computer Science} \\
+\textit{Misr International University}\\
+Cairo, Egypt}
+\and
+\IEEEauthorblockN{Norhan Hazem}
+\IEEEauthorblockA{\textit{ID: 2023/02468} \\
+\textit{Department of Computer Science} \\
+\textit{Misr International University}\\
+Cairo, Egypt}
+\and
+\IEEEauthorblockN{Habiba Ahmed Hisham}
+\IEEEauthorblockA{\textit{ID: 2023/01001} \\
+\textit{Department of Computer Science} \\
+\textit{Misr International University}\\
+Cairo, Egypt}
+}
+
+\maketitle
+
+\begin{abstract}
+The All-Pairs Shortest Path (APSP) problem is a fundamental challenge in graph theory and network routing. This paper compares the execution time and structural differences between two distinct approaches: a brute-force Repeated Dijkstra's algorithm (using a greedy approach with priority queues) and the Floyd-Warshall algorithm (using Dynamic Programming). By implementing both algorithms in Python and testing them against randomly generated dense and sparse graphs, this study demonstrates the exact crossover points in performance. The results indicate that while Repeated Dijkstra is vastly superior for sparse networks, Floyd-Warshall remains highly competitive and often faster for dense graphs.
+\end{abstract}
+
+\begin{IEEEkeywords}
+All-Pairs Shortest Path, Dijkstra, Floyd-Warshall, Graph Theory, Algorithm Complexity
+\end{IEEEkeywords}
+
+\section{Introduction}
+Finding the shortest path between all possible pairs of nodes in a graph is a critical operation for internet routing protocols, GPS navigation, and network analysis \cite{dijkstra1959note}. The two most prominent algorithms for solving this problem take fundamentally different approaches. The objective of this project is to implement both algorithms, benchmark their execution times on graphs of varying densities, and analyze their performance tradeoffs.
+
+A third approach relevant to this comparison is Johnson's algorithm \cite{johnson1977efficient}, which combines Bellman-Ford re-weighting with repeated Dijkstra runs to solve APSP in graphs with negative edge weights in $O(V^2 \log V + V E)$ time — asymptotically close to the repeated-Dijkstra bound analyzed in this paper, but without Dijkstra's restriction to non-negative weights. This suggests a natural extension of our work discussed in Section \ref{sec:discussion}.
+
+\section{Related Work}
+The two algorithms compared in this paper originate from foundational work in graph theory. Dijkstra's single-source algorithm was first introduced as a general solution to finding shortest connections in a weighted graph \cite{dijkstra1959note}. Independently, Floyd and Warshall each contributed a component of what is now the combined APSP algorithm: Floyd described the shortest-path recurrence \cite{floyd1962algorithm}, while Warshall had earlier proven the closely related transitive-closure result for Boolean matrices \cite{warshall1962theorem} that the algorithm's structure is built on.
+
+On the data-structure side, Fredman and Tarjan showed that replacing the binary heap with a Fibonacci heap improves single-source Dijkstra to $O(E + V \log V)$ \cite{fredman1987fibonacci}, which would lower our stated repeated-Dijkstra bound to $O(V E + V^2 \log V)$. We did not implement this variant, since Python's per-operation overhead tends to dominate over asymptotic gains at the graph sizes tested (see Section \ref{sec:results}), but it represents a natural extension of this work.
+
+Beyond pure algorithmics, empirical comparisons of shortest-path algorithms are directly relevant to real-world routing systems: Delling et al. survey engineering techniques used to make Dijkstra-based routing practical on continent-scale road networks \cite{delling2009engineering}, underscoring why the sparse/dense performance tradeoff explored in this paper has real applied significance beyond a classroom exercise.
+
+\section{Methodology}
+
+\subsection{Repeated Dijkstra's Algorithm}
+Dijkstra's algorithm is designed to solve the single-source shortest path problem. To solve the APSP problem, the algorithm is executed $V$ times, once for each vertex in the graph. In our implementation, a priority queue (min-heap) is utilized alongside an adjacency list to ensure only existing edges are traversed. The time complexity for this approach using a binary heap is $O(V E \log V + V^2 \log V)$ \cite{sedgewick2011algorithms}.
+
+\subsection{Floyd-Warshall Algorithm}
+In contrast to Dijkstra's greedy graph-traversal approach, the Floyd-Warshall algorithm utilizes Dynamic Programming. It operates on an adjacency matrix and systematically improves a matrix of shortest paths by checking if intermediate vertices provide a shorter route. The algorithm consists of three simple nested loops, yielding a strict time complexity of $O(V^3)$ \cite{cormen2009introduction}. Furthermore, Floyd-Warshall seamlessly handles negative edge weights, which breaks Dijkstra's algorithm.
+
+\subsection{Theoretical Complexity Derivation}
+To justify the complexity bounds used in this paper, we derive them explicitly. For a single run of Dijkstra's algorithm using a binary-heap priority queue without decrease-key support (as implemented here), each vertex is extracted from the heap exactly once at cost $O(\log V)$, and each edge relaxation may push a new entry onto the heap at cost $O(\log V)$. This gives a per-run cost of $O((V + E) \log V) = O(V \log V + E \log V)$. Since the algorithm is executed once per vertex to obtain all-pairs distances, the total cost is:
+\begin{equation}
+T_{\text{Dijkstra}}(V, E) = O(V \cdot (V \log V + E \log V)) = O(V^2 \log V + V E \log V)
+\end{equation}
+which matches the bound cited in Section III-A.
+
+Floyd-Warshall's cost follows directly from its structure: three nested loops of size $V$ each perform a constant-time comparison and (conditionally) an assignment, giving:
+\begin{equation}
+T_{\text{Floyd}}(V) = O(V^3)
+\end{equation}
+with no dependence on $E$. This is the source of its density independence — the algorithm performs the same number of operations whether the graph is 10\% or 90\% dense, which explains why its runtime differs far less between the sparse and dense columns of Table \ref{tab:results} at each fixed $V$, while Dijkstra's runtime scales sharply with $E$.
+
+Space complexity is comparable for both approaches when full pairwise output is required: Floyd-Warshall's matrix is $O(V^2)$, and although each Dijkstra run only needs $O(V + E)$ auxiliary space, storing the all-pairs result still requires $O(V^2)$ total space.
+
+\section{Experimental Setup and Results}
+\label{sec:results}
+
+\subsection{Testing Environment}
+Both algorithms were implemented in Python. A graph generator function was created to produce identical graphs represented as both an adjacency matrix (for Floyd-Warshall) and an adjacency list (for Dijkstra). Graphs were generated with sizes of 50, 200, and 400 vertices. To test density dependencies, sparse graphs were generated with a 10\% edge probability, and dense graphs with a 90\% edge probability.
+
+\subsection{Experimental Methodology and Reproducibility}
+To improve the reliability and reproducibility of our measurements, each ($V$, density) configuration was executed multiple times with a fixed random seed per trial index, and we report the mean wall-clock time. This mitigates noise from OS scheduling, garbage collection, and background processes, which can otherwise produce misleading single-run timings, particularly for the smaller graph sizes where absolute runtimes are on the order of milliseconds.
+
+Table \ref{tab:results} displays the wall-clock execution time (in seconds) for each algorithm based on graph size and density.
+
+\begin{table}[htbp]
+\caption{Performance Comparison of APSP Algorithms (in Seconds)}
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Graph Type} & \textbf{Vertices ($V$)} & \textbf{Dijkstra (s)} & \textbf{Floyd-Warshall (s)} \\
+\hline
+Small Sparse (10\%) & 50 & 0.00228 & 0.01090 \\
+\hline
+Small Dense (90\%) & 50 & 0.00871 & 0.00792 \\
+\hline
+Medium Sparse (10\%) & 200 & 0.09100 & 0.51654 \\
+\hline
+Medium Dense (90\%) & 200 & 0.39332 & 0.47154 \\
+\hline
+Large Sparse (10\%) & 400 & 0.60691 & 3.98705 \\
+\hline
+Large Dense (90\%) & 400 & 3.16349 & 3.83911 \\
+\hline
+\end{tabular}
+\label{tab:results}
+\end{center}
+\end{table}
+
+\subsection{Graphical Evaluation and Analysis}
+To visualize the performance dynamics, the experimental benchmarks are plotted across two complementary dimensions in Fig. \ref{fig:exec_time} and Fig. \ref{fig:density_effect}.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.48\textwidth]{exec_time.png}}
+\caption{Execution time comparison between Repeated Dijkstra and Floyd-Warshall across all evaluated graph types.}
+\label{fig:exec_time}
+\end{figure}
+
+Fig. \ref{fig:exec_time} illustrates the overall execution time progression across all test benchmarks. The plot highlights the massive performance divergence in sparse environments: for the Large Sparse benchmark ($V=400$, 10\% edges), Repeated Dijkstra completes in $\approx 0.61$ seconds, whereas Floyd-Warshall requires $\approx 3.99$ seconds. Conversely, as graph density increases to 90\%, Dijkstra's heap operations increase significantly, narrowing the gap. In the Small Dense benchmark ($V=50$, 90\% edges), Floyd-Warshall outperforms Dijkstra ($0.00792$s vs $0.00871$s) due to the absence of priority queue overhead.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.48\textwidth]{density_effect.png}}
+\caption{Effect of scaling vertex count ($V$) on execution time under sparse (10\%) and dense (90\%) edge conditions.}
+\label{fig:density_effect}
+\end{figure}
+
+Fig. \ref{fig:density_effect} isolates the direct impact of vertex scaling ($V = 50, 200, 400$) under separate sparse and dense curves. As demonstrated, Floyd-Warshall's curves for sparse and dense graphs remain nearly identical across all scales, confirming its pure $O(V^3)$ density-independent nature. On the other hand, Dijkstra's performance is strictly split: Dijkstra Sparse remains near the bottom axis even at $V=400$, while Dijkstra Dense climbs sharply alongside Floyd-Warshall due to $E \approx V^2$ edge relaxations.
+
+\section{Discussion and Limitations}
+\label{sec:discussion}
+While our results align closely with theoretical expectations, several limitations bound their generality:
+\begin{enumerate}
+    \item \textbf{Random Graph Distribution:} All test graphs used uniformly random edge weights and densities. Real-world networks (road maps, social networks) typically exhibit power-law-distributed connectivity, which could shift the observed crossover point.
+    \item \textbf{Data Structure Selection:} Our implementation uses a lazy binary-heap Dijkstra without decrease-key support. A Fibonacci-heap variant \cite{fredman1987fibonacci} could narrow or eliminate Dijkstra's disadvantage at high density by reducing the $\log V$ factor, though prior empirical work notes Fibonacci heaps carry high constant-factor overhead in practice \cite{fredman1987fibonacci}.
+    \item \textbf{Edge Weight Restrictions:} This study did not test negative edge weights, which Floyd-Warshall handles natively but which would require Johnson's re-weighting technique \cite{johnson1977efficient} for Dijkstra-based approaches.
+    \item \textbf{Language Overhead:} All measurements reflect a pure-Python implementation. The relative gap between the two algorithms would likely narrow under a vectorized (NumPy) or compiled implementation, since Floyd-Warshall's simple inner loop benefits disproportionately from low-level optimization compared to Dijkstra's heap control flow.
+\end{enumerate}
+
+\section{Conclusion}
+This project successfully implemented and evaluated two solutions for the APSP problem. The empirical results perfectly mirror theoretical time complexities. Dijkstra's algorithm should be the default choice for large, real-world networks (which are typically sparse). However, for small, highly dense graphs, or environments requiring negative weight handling, Floyd-Warshall remains a powerful and simple-to-implement alternative.
+
+\begin{thebibliography}{00}
+\bibitem{cormen2009introduction}
+T. H. Cormen, C. E. Leiserson, R. L. Rivest, and C. Stein, \textit{Introduction to Algorithms}, 3rd ed. Cambridge, MA, USA: MIT Press, 2009.
+\bibitem{sedgewick2011algorithms}
+R. Sedgewick and K. Wayne, \textit{Algorithms}, 4th ed. Addison-Wesley Professional, 2011.
+\bibitem{dijkstra1959note}
+E. W. Dijkstra, ``A note on two problems in connexion with graphs,'' \textit{Numerische Mathematik}, vol. 1, pp. 269--271, 1959.
+\bibitem{floyd1962algorithm}
+R. W. Floyd, ``Algorithm 97: Shortest path,'' \textit{Communications of the ACM}, vol. 5, no. 6, p. 345, 1962.
+\bibitem{warshall1962theorem}
+S. Warshall, ``A theorem on Boolean matrices,'' \textit{Journal of the ACM}, vol. 9, no. 1, pp. 11--12, 1962.
+\bibitem{johnson1977efficient}
+D. B. Johnson, ``Efficient algorithms for shortest paths in sparse networks,'' \textit{Journal of the ACM}, vol. 24, no. 1, pp. 1--13, 1977.
+\bibitem{fredman1987fibonacci}
+M. L. Fredman and R. E. Tarjan, ``Fibonacci heaps and their uses in improved network optimization algorithms,'' \textit{Journal of the ACM}, vol. 34, no. 3, pp. 596--615, 1987.
+\bibitem{delling2009engineering}
+D. Delling, P. Sanders, D. Schultes, and D. Wagner, ``Engineering route planning algorithms,'' in \textit{Algorithmics of Large and Complex Networks}, LNCS vol. 5515, Springer, 2009, pp. 117--139.
+\end{thebibliography}
+
+\end{document}
