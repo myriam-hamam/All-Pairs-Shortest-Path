@@ -120,6 +120,7 @@ def plot_execution_time_comparison(results):
     plt.tight_layout()
 
     plt.savefig("execution_time_comparison.png")
+    plt.show()
     plt.close()
 
 
@@ -157,6 +158,7 @@ def plot_effect_of_graph_density(results):
     plt.tight_layout()
 
     plt.savefig("effect_of_graph_density.png")
+    plt.show()
     plt.close()
 
 
