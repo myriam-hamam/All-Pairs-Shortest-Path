@@ -2,9 +2,11 @@ import math      # Gives us access to math.inf (Infinity), representing a road t
 import random    # Used to randomly generate the "roads" and "distances" for our fake maps
 import heapq     # A specialized sorting tool (Priority Queue) that Dijkstra uses to always find the closest city fast
 
+
 # ==========================================
 # 1. THE ALGORITHMS
 # ==========================================
+# dijkstra
 
 def repeated_dijkstra(V, adj_list):
     # This list will hold our final "cheat sheet" of all shortest paths
@@ -48,7 +50,7 @@ def repeated_dijkstra(V, adj_list):
         
     # Return the completed cheat sheet
     return all_pairs_shortest_paths
-
+#floyd warshall
 
 def floyd_warshall(V, adj_matrix):
     # Create a copy of the input map matrix so we don't destroy the original data. 
