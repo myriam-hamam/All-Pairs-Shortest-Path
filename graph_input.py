@@ -20,9 +20,9 @@ def enter_graph_manually():
         matrix[i][i] = 0
 
     # Tell the user exactly how each edge line should be formatted before they start typing
-    print("Enter each edge in the format:")
+    print("\nEnter each edge in the format:")
     print("source destination weight")
-    print("Example: 0 1 5")
+    print("Example: 0 1 5\n")
 
     # Read every edge the user wants to enter
     for _ in range(E):
@@ -37,6 +37,15 @@ def enter_graph_manually():
 
         # Add this exact same edge to the Adjacency Matrix format
         matrix[source][destination] = weight
+
+    # Reuse the existing sample/random graph visualization functions from main.py, instead of
+    # duplicating them here. Imported locally to avoid a circular import with main.py, which
+    # itself imports enter_graph_manually() from this file.
+    from main import print_adjacency_list, visualize_graph
+
+    # Show the manually entered graph as text, then as a NetworkX drawing, before running any algorithm
+    print_adjacency_list(adj_list, title="Generated Manual Graph")
+    visualize_graph(adj_list, title="Generated Manual Graph")
 
     # Run both algorithms on the exact same manually entered graph
     dijkstra_result = repeated_dijkstra(V, adj_list)
