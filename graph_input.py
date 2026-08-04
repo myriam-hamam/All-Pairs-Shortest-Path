@@ -20,7 +20,7 @@ def enter_graph_manually():
         matrix[i][i] = 0
 
     # Tell the user exactly how each edge line should be formatted before they start typing
-    print("Enter each edge in the following format:")
+    print("Enter each edge in the format:")
     print("source destination weight")
     print("Example: 0 1 5")
 
