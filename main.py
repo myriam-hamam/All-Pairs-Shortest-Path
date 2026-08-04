@@ -21,7 +21,7 @@ NUM_TRIALS = 5
 def display_menu():
     # Show the four available options to the user
     print("====================================")
-    print("Graph Algorithms Project")
+    print("All-Pairs Shortest Path Algorithms")
     print("====================================")
     print("1. Run Benchmark Experiments")
     print("2. Enter Graph Manually")
@@ -33,23 +33,35 @@ def main_menu():
     # Keep showing the menu until the user chooses to exit
     while True:
         display_menu()
+
+        # A blank line before the prompt keeps the menu easy to read
+        print()
         choice = input("Choose an option: ")
+
+        # A separator line so the option's output is visually set apart from the menu
+        print("----------------------------------------")
 
         if choice == "1":
             # Simply call the existing benchmark runner, unchanged
             run_benchmarks()
+            print("\nPress Enter to return to the main menu...")
+            input()
 
         elif choice == "2":
             # Let the user manually build and test a graph of their own
             enter_graph_manually()
+            print("\nPress Enter to return to the main menu...")
+            input()
 
         elif choice == "3":
             # Reuse the existing sample graph visualization, unchanged
             show_sample_graph_visualization()
+            print("\nPress Enter to return to the main menu...")
+            input()
 
         elif choice == "4":
             # Exit the program gracefully
-            print("Exiting program. Goodbye!")
+            print("Thank you for using the All-Pairs Shortest Path Algorithms project.")
             break
 
         else:
