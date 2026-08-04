@@ -171,9 +171,11 @@ def show_sample_graph_visualization():
     visualize_graph(sample_adj_list)
 
 
-def print_adjacency_list(adj_list):
-    # A simple text preview of the small sample graph, so we can sanity-check it
-    print("\nGenerated Sample Graph")
+def print_adjacency_list(adj_list, title="Generated Sample Graph"):
+    # A simple text preview of a graph, so we can sanity-check it.
+    # 'title' lets this same function label both the random sample graph and a manually entered one.
+    print(f"\n{title}")
+    print()
 
     # Go through every city in the order it was created
     for node in sorted(adj_list.keys()):
@@ -185,7 +187,7 @@ def print_adjacency_list(adj_list):
     print()
 
 
-def visualize_graph(adj_list):
+def visualize_graph(adj_list, title="Generated Sample Graph (5 Vertices)"):
     # Try to bring in NetworkX only when we actually need to draw a graph
     try:
         import networkx as nx
@@ -216,7 +218,8 @@ def visualize_graph(adj_list):
     edge_labels = nx.get_edge_attributes(graph, "weight")
     nx.draw_networkx_edge_labels(graph, layout, edge_labels=edge_labels)
 
-    plt.title("Generated Sample Graph (5 Vertices)")
+    # 'title' lets this same function label both the random sample graph and a manually entered one
+    plt.title(title)
     plt.tight_layout()
 
     plt.savefig("generated_random_graph.png")
