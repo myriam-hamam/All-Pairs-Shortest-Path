@@ -63,22 +63,7 @@ Responsible for:
 - Displaying a sample random graph.
 - Drawing performance comparison figures.
 
----
 
-# Requirements
-
-- Python 3.10 or later
-
-Install the required libraries:
-
-```bash
-pip install -r requirements.txt
-```
-
-or
-
-```bash
-pip install matplotlib networkx
 ```
 
 The following modules are included with Python:
