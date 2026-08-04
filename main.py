@@ -4,11 +4,56 @@ import matplotlib.pyplot as plt   # Used to draw the figures comparing the algor
 
 from algorithms import repeated_dijkstra, floyd_warshall, generate_graphs
 
+# Reuse the existing manual graph input feature, instead of duplicating it here
+from graph_input import enter_graph_manually
+
 # Fixed seed so every run of the experiments is reproducible, as described in the paper
 RANDOM_SEED = 42
 
 # Number of times each benchmark is repeated so we can compute an average execution time
 NUM_TRIALS = 5
+
+
+# ==========================================
+# MAIN LAUNCHER (Interactive Menu)
+# ==========================================
+
+def display_menu():
+    # Show the four available options to the user
+    print("====================================")
+    print("Graph Algorithms Project")
+    print("====================================")
+    print("1. Run Benchmark Experiments")
+    print("2. Enter Graph Manually")
+    print("3. Display Sample Graph")
+    print("4. Exit")
+
+
+def main_menu():
+    # Keep showing the menu until the user chooses to exit
+    while True:
+        display_menu()
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            # Simply call the existing benchmark runner, unchanged
+            run_benchmarks()
+
+        elif choice == "2":
+            # Let the user manually build and test a graph of their own
+            enter_graph_manually()
+
+        elif choice == "3":
+            # Reuse the existing sample graph visualization, unchanged
+            show_sample_graph_visualization()
+
+        elif choice == "4":
+            # Exit the program gracefully
+            print("Exiting program. Goodbye!")
+            break
+
+        else:
+            print("Invalid option. Please choose 1, 2, 3, or 4.")
 
 
 # ==========================================
@@ -236,6 +281,6 @@ def plot_effect_of_graph_density(results):
     plt.close()
 
 
-# This is the "Start Button" for Python. It tells Python to run the benchmarks when we execute the file.
+# This is the "Start Button" for Python. It tells Python to launch the menu when we execute this file.
 if __name__ == "__main__":
-    run_benchmarks()
+    main_menu()
