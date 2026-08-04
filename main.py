@@ -16,6 +16,10 @@ NUM_TRIALS = 5
 # ==========================================
 
 def run_benchmarks():
+    # Before touching the real benchmarks, generate and display one small, easy-to-read
+    # sample graph purely for visualization purposes (this graph is never benchmarked)
+    show_sample_graph_visualization()
+
     # A list of the different races we want to run. 
     # Format: (Number of Cities, Map Density percentage, Label for the table)
     test_cases = [
@@ -91,6 +95,76 @@ def run_benchmarks():
     # Once every benchmark has run and been verified, draw the comparison figures
     plot_execution_time_comparison(results)
     plot_effect_of_graph_density(results)
+
+
+# ==========================================
+# 5. GRAPH VISUALIZATION (The Map Preview)
+# ==========================================
+
+def show_sample_graph_visualization():
+    # A separate, tiny, dedicated seed just for building the small sample graph, so it
+    # never interferes with the fixed seeds used later by the real benchmark trials
+    random.seed(RANDOM_SEED)
+
+    # Build a small 5-city, 50% density graph, used ONLY for visualization, never benchmarked
+    sample_adj_list, sample_matrix = generate_graphs(5, 0.5)
+
+    # Show the small sample graph as text, then as a NetworkX drawing
+    print_adjacency_list(sample_adj_list)
+    visualize_graph(sample_adj_list)
+
+
+def print_adjacency_list(adj_list):
+    # A simple text preview of the small sample graph, so we can sanity-check it
+    print("\nGenerated Sample Graph")
+
+    # Go through every city in the order it was created
+    for node in sorted(adj_list.keys()):
+        # Build up a string of all "(neighbor,weight)" pairs for this city
+        edges_text = " ".join(f"({neighbor},{weight})" for neighbor, weight in adj_list[node])
+        print(f"{node} -> {edges_text}")
+
+    # Blank line so the console output stays easy to read
+    print()
+
+
+def visualize_graph(adj_list):
+    # Try to bring in NetworkX only when we actually need to draw a graph
+    try:
+        import networkx as nx
+    except ImportError:
+        # If NetworkX isn't installed, don't crash the whole benchmark, just skip drawing
+        print("NetworkX is not installed. Skipping graph visualization.")
+        return
+
+    # Build a Directed Graph, since our roads only go one way (i -> j)
+    graph = nx.DiGraph()
+
+    # Add every city and every road (with its weight) into the NetworkX graph
+    for node, edges in adj_list.items():
+        # Make sure every city shows up as a node, even ones with no outgoing roads
+        graph.add_node(node)
+        for neighbor, weight in edges:
+            graph.add_edge(node, neighbor, weight=weight)
+
+    # Use a fixed seed so the layout (where nodes are placed) is reproducible every run
+    layout = nx.spring_layout(graph, seed=42)
+
+    plt.figure(figsize=(10, 8))
+
+    # Draw the nodes and edges, with node labels shown
+    nx.draw(graph, layout, with_labels=True, node_color="lightblue", node_size=600, arrows=True)
+
+    # Pull out the weight of every edge so we can label them on the drawing
+    edge_labels = nx.get_edge_attributes(graph, "weight")
+    nx.draw_networkx_edge_labels(graph, layout, edge_labels=edge_labels)
+
+    plt.title("Generated Sample Graph (5 Vertices)")
+    plt.tight_layout()
+
+    plt.savefig("generated_random_graph.png")
+    plt.show()
+    plt.close()
 
 
 # ==========================================
