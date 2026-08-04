@@ -1,167 +1,282 @@
-# Performance Comparison of Repeated Dijkstra and Floyd-Warshall for the All-Pairs Shortest Path Problem
+# All-Pairs Shortest Path:
+## Brute Force (Repeated Dijkstra) vs. Floyd-Warshall (Dynamic Programming)
 
 ## Overview
 
 This project compares two different algorithms for solving the **All-Pairs Shortest Path (APSP)** problem:
 
-* **Repeated Dijkstra's Algorithm** (Greedy Approach)
-* **Floyd-Warshall Algorithm** (Dynamic Programming)
+- **Repeated Dijkstra Algorithm (Brute Force / Greedy Approach)**
+- **Floyd-Warshall Algorithm (Dynamic Programming)**
 
-Both algorithms compute the shortest path between every pair of vertices in a weighted graph. The objective is to compare their execution time on graphs of different sizes and densities and analyze the trade-offs between them.
+Both algorithms compute the shortest path between every pair of vertices in a weighted directed graph. The objective of this project is to compare their execution time on graphs of different sizes and densities, verify that they produce identical results, and analyze the trade-offs between the two approaches.
 
 ---
 
-## Project Structure
-Project/
+# Project Structure
+
+```
+Team3-Algo-Project/
 │
 ├── algorithms.py
+├── graph_input.py
 ├── main.py
-├── algo project's graphs.py
-├── Research paper
-└── README.md
+├── Team3_All_Pairs_Shortest_Path_Paper.pdf
+├── README.md
+
+```
+
 ---
 
-## Files Description
+# Files Description
 
-### algorithms.py
+## algorithms.py
 
 Contains the core implementation of:
 
-* Repeated Dijkstra Algorithm
-* Floyd-Warshall Algorithm
-* Random Graph Generator
+- Repeated Dijkstra Algorithm
+- Floyd-Warshall Algorithm
+- Random Graph Generator
 
 ---
 
-### main.py
+## graph_input.py
 
 Responsible for:
 
-* Generating random graphs
-* Running benchmark experiments
-* Measuring execution times
-* Verifying correctness of both algorithms
-* Producing performance graphs
-* Printing benchmark results
+- Reading a graph entered manually by the user.
+- Building the adjacency list and adjacency matrix.
+- Running both algorithms on the user-defined graph.
+- Printing both shortest-path matrices.
+- Verifying that both algorithms produce identical results.
 
 ---
 
-### algo project's graphs.py
+## main.py
 
-Responsible for handling and plotting the performance and density comparison figures.
+Responsible for:
+
+- Displaying the interactive menu.
+- Running benchmark experiments.
+- Generating random graphs.
+- Measuring execution time.
+- Verifying correctness.
+- Displaying a sample random graph.
+- Drawing performance comparison figures.
 
 ---
 
-## Requirements
+# Requirements
 
-Python 3.10 or later
+- Python 3.10 or later
 
-Required libraries:
+Install the required libraries:
 
 ```bash
-pip install matplotlib
-The following modules are also used:
+pip install -r requirements.txt
+```
 
-time
+or
 
-random
+```bash
+pip install matplotlib networkx
+```
 
-math
+The following modules are included with Python:
 
-heapq
+- time
+- random
+- math
+- heapq
 
-(All except matplotlib are included with Python.)
+---
 
-How to Run
+# How to Run
+
 Run the project using:
+
+```bash
 python main.py
-The program will:
+```
 
-Generate random graphs.
+The program displays the following menu:
 
-Execute Repeated Dijkstra.
+```
+=========================================
+All-Pairs Shortest Path Algorithm Comparison
+=========================================
 
-Execute Floyd-Warshall.
+1. Run Benchmark Experiments
+2. Enter Graph Manually
+3. Display Sample Graph
+4. Exit
+```
 
-Verify that both algorithms produce identical shortest-path results.
+---
 
-Measure and compare execution times.
+# Program Features
 
-Display and save performance graphs.
+### 1. Benchmark Experiments
 
-Output
-The program prints a benchmark table similar to:
+Runs benchmark experiments on randomly generated graphs of different sizes and densities.
 
-Graph Type                | Vertices | Dijkstra Time (s) | Floyd-Warshall Time (s)
------------------------------------------------------------------------------------
-Small Sparse              | 50       | 0.00231           | 0.01084
-Small Dense               | 50       | 0.00863           | 0.00791
+The program:
+
+- Generates random graphs.
+- Executes Repeated Dijkstra.
+- Executes Floyd-Warshall.
+- Verifies correctness.
+- Measures execution times.
+- Displays performance comparison graphs.
+
+---
+
+### 2. Manual Graph Input
+
+Allows the user to enter a custom weighted directed graph.
+
+Example:
+
+```
+Enter number of vertices: 5
+Enter number of edges: 6
+
+Enter each edge in the format:
+source destination weight
+
+Example:
+0 1 5
+
+Enter edge:
+0 1 4
+0 2 7
+1 3 2
 ...
-Experimental Setup
-Graphs were generated using:
+```
 
-Vertices:
+The program then prints:
 
-50
+- Repeated Dijkstra Result
+- Floyd-Warshall Result
+- Verification Passed!
 
-200
+---
 
-400
+### 3. Sample Graph Visualization
 
-Graph densities:
+Displays a small randomly generated graph consisting of five vertices.
 
-Sparse (10%)
+The visualization includes:
 
-Dense (90%)
+- Adjacency List
+- Graph drawing using NetworkX
+- Edge weights
+- Node labels
 
-Each benchmark configuration is executed multiple times using fixed random seeds to ensure reproducibility, and the average execution time is reported.
+This graph is generated only for demonstration purposes and is **not** used during benchmarking.
 
-Algorithms Compared
-Repeated Dijkstra
-Strategy: Greedy
+---
 
-Data Structure: Priority Queue (Min-Heap)
+# Experimental Setup
 
-Graph Representation: Adjacency List
+The benchmark experiments use six graph configurations:
 
-Time Complexity:
+| Graph Size | Density |
+|------------|----------|
+| 50 Vertices | Sparse (10%) |
+| 50 Vertices | Dense (90%) |
+| 200 Vertices | Sparse (10%) |
+| 200 Vertices | Dense (90%) |
+| 400 Vertices | Sparse (10%) |
+| 400 Vertices | Dense (90%) |
 
-O(V² log V + VE log V)
-Floyd-Warshall
-Strategy: Dynamic Programming
+Each benchmark is executed **five times** using fixed random seeds to ensure reproducibility.
 
-Graph Representation: Adjacency Matrix
+The reported execution time is the average of the five runs.
 
-Time Complexity:
+---
 
+# Algorithms Compared
+
+## Repeated Dijkstra
+
+- Strategy: Greedy (Brute Force)
+- Graph Representation: Adjacency List
+- Data Structure: Priority Queue (Min-Heap)
+
+### Time Complexity
+
+```
+O(V × E log V)
+```
+
+---
+
+## Floyd-Warshall
+
+- Strategy: Dynamic Programming
+- Graph Representation: Adjacency Matrix
+
+### Time Complexity
+
+```
 O(V³)
-Verification
-For every benchmark, the project compares the shortest-path matrices produced by both algorithms.
+```
 
-If any difference is detected, the program raises an AssertionError.
+---
 
-Authors
-Zeyad Mohamed Samir
+# Verification
 
-Norhan Hazem
+The project verifies that **Repeated Dijkstra** and **Floyd-Warshall** produce identical shortest-path matrices for:
 
-Habiba Essam
+- Randomly generated benchmark graphs.
+- Manually entered graphs.
 
-Habiba Ahmed Hisham
+If any mismatch is detected, the program raises an **AssertionError** or displays a verification failure message.
 
-Myriam Hamam Ebrahim
+---
+
+# Output
+
+The project produces:
+
+- Benchmark execution table.
+- Verification messages.
+- Execution Time Comparison graph.
+- Graph Density Comparison graph.
+- Sample Random Graph visualization.
+
+---
+
+# Authors
+
+**Team 3**
+
+- Zeyad Mohamed Samir (Team Leader)
+- Norhan Hazem
+- Habiba Essam
+- Habiba Ahmed Hisham
+- Myriam Hamam Ebrahim
 
 Department of Computer Science
 
 Misr International University (MIU)
 
-References
-Thomas H. Cormen et al., Introduction to Algorithms, 3rd Edition.
+---
 
-Robert Sedgewick and Kevin Wayne, Algorithms, 4th Edition.
+# References
 
-E. W. Dijkstra, "A Note on Two Problems in Connexion with Graphs", 1959.
+1. Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. *Introduction to Algorithms*, 3rd Edition.
 
-Robert W. Floyd, "Algorithm 97: Shortest Path", 1962.
+2. Robert Sedgewick and Kevin Wayne. *Algorithms*, 4th Edition.
 
-Stephen Warshall, "A Theorem on Boolean Matrices", 1962.
+3. E. W. Dijkstra. *A Note on Two Problems in Connexion with Graphs*, 1959.
+
+4. Robert W. Floyd. *Algorithm 97: Shortest Path*, 1962.
+
+5. Stephen Warshall. *A Theorem on Boolean Matrices*, 1962.
+
+6. NetworkX Documentation  
+https://networkx.org/
+
+7. Matplotlib Documentation  
+https://matplotlib.org/
